@@ -1,0 +1,14 @@
+@startuml analytics-database-diagram
+title BevTrace - analytics tables (generated)
+hide circle
+skinparam linetype ortho
+
+entity logistics_reports {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   user_id : Long <<FK>>
+   period_start : LocalDate
+   period_end : LocalDate
+}
+@enduml
