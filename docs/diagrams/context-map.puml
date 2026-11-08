@@ -1,0 +1,28 @@
+@startuml context-map
+title BevTrace - context map (generated)
+left to right direction
+rectangle iam
+rectangle inventory
+rectangle dispatch
+rectangle traceability
+rectangle telemetry
+rectangle incident
+rectangle analytics
+rectangle subscription
+analytics --> dispatch : ACL:DispatchContextFacade
+analytics --> iam : ACL:IamContextFacade
+analytics --> inventory : ACL:InventoryContextFacade
+dispatch --> iam : ACL:IamContextFacade
+dispatch --> inventory : ACL:InventoryContextFacade
+dispatch --> traceability : event:DeliveryConfirmed
+incident --> dispatch : event:DispatchAuthorized
+incident --> iam : ACL:IamContextFacade
+incident --> inventory : event:DiscrepanciesDetected
+incident --> telemetry : ACL:TelemetryContextFacade
+incident --> traceability : ACL:TraceabilityContextFacade, event:DeliveryConfirmed
+inventory --> iam : ACL:IamContextFacade
+subscription --> iam : ACL:IamContextFacade
+telemetry --> dispatch : ACL:DispatchContextFacade
+traceability --> dispatch : event:DispatchDeparted
+traceability --> telemetry : ACL:TelemetryContextFacade, event:ReadingRecorded
+@enduml
