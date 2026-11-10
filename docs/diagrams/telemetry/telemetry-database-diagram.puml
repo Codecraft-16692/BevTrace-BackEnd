@@ -1,0 +1,46 @@
+@startuml telemetry-database-diagram
+title BevTrace - telemetry tables (generated)
+hide circle
+skinparam linetype ortho
+
+entity device_models {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   name : String
+   manufacturer : String
+   sensors : String
+}
+entity disconnection_periods {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   device_id : Long <<FK>>
+   started_at : Instant
+   ended_at : Instant
+   data_status : DataStatus
+}
+entity location_streams {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   device_id : Long <<FK>>
+   latitude : double
+   longitude : double
+   speed : double
+   temperature : double
+   recorded_at : Instant
+}
+entity telemetry_devices {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   vehicle_id : Long <<FK>>
+   model_id : Long <<FK>>
+   device_code : String
+   installed_at : Instant
+   is_active : boolean
+   connection_status : ConnectionStatus
+   last_signal_at : Instant
+}
+@enduml
