@@ -1,0 +1,72 @@
+@startuml inventory-database-diagram
+title BevTrace - inventory tables (generated)
+hide circle
+skinparam linetype ortho
+
+entity inventory_discrepancies {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   reconciliation_id : Long <<FK>>
+   batch_id : Long <<FK>>
+   expected_qty : int
+   counted_qty : int
+   status : DiscrepancyStatus
+   detected_at : Instant
+   resolved_at : Instant
+   resolution_note : String
+}
+entity inventory_reconciliations {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   reconciliation_date : LocalDate
+   status : ReconciliationStatus
+   total_batches : int
+   matched_batches : int
+   eri_percentage : double
+   confirmed_by : Long
+   confirmed_at : Instant
+}
+entity product_batches {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   product_id : Long <<FK>>
+   zone_id : Long <<FK>>
+   batch_number : String
+   initial_qty : int
+   current_qty : int
+   status : BatchStatus
+   received_at : Instant
+   expiration_date : LocalDate
+}
+entity products {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   sku_code : String
+   name : String
+   category : String
+   volume_ml : int
+   packaging_type : String
+}
+entity warehouse_zones {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   name : String
+   aisle : String
+   rack : String
+}
+entity waste_records {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   batch_id : Long <<FK>>
+   user_id : Long <<FK>>
+   quantity : int
+   reason : String
+   reported_date : LocalDate
+}
+@enduml
