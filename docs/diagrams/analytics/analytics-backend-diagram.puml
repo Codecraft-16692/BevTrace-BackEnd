@@ -1,0 +1,56 @@
+@startuml analytics-backend-diagram
+title BevTrace - analytics context (generated)
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+left to right direction
+
+package "Aggregate" #FDEBD0 {
+  class LogisticsReport
+}
+package "ValueObject" #FCF3CF {
+  class Indicators
+  class KpiMetric
+  class OperationalData
+}
+package "DomainService" #FCF3CF {
+  class KpiCalculator
+}
+package "Port" #E8F6F3 {
+  interface LogisticsReportRepository
+}
+package "CommandService" #D5F5E3 {
+  class LogisticsReportCommandService
+}
+package "QueryService" #D5F5E3 {
+  class IndicatorQueryService
+  class LogisticsReportQueryService
+}
+package "Internal" #D5F5E3 {
+  class ExternalOperationalDataService
+}
+package "Adapter" #EAEDED {
+  class LogisticsReportRepositoryAdapter
+}
+package "Controller" #FADBD8 {
+  class IndicatorsController
+  class LogisticsReportsController
+}
+note as Ncommands
+  commands: GenerateLogisticsReportCommand
+end note
+note as Nqueries
+  queries: GetAllLogisticsReportsQuery, GetIndicatorsQuery, GetLogisticsReportByIdQuery
+end note
+note as Nresources
+  resources: GenerateLogisticsReportResource, LogisticsReportResource
+end note
+LogisticsReportCommandService --> LogisticsReportRepository
+LogisticsReportCommandService --> ExternalOperationalDataService
+IndicatorQueryService --> ExternalOperationalDataService
+LogisticsReportQueryService --> LogisticsReportRepository
+LogisticsReportRepositoryAdapter --> LogisticsReportJpaRepository
+LogisticsReportRepositoryAdapter ..|> LogisticsReportRepository
+IndicatorsController --> IndicatorQueryService
+LogisticsReportsController --> LogisticsReportQueryService
+LogisticsReportsController --> LogisticsReportCommandService
+@enduml

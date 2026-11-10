@@ -1,0 +1,64 @@
+@startuml subscription-database-diagram
+title BevTrace - subscription tables (generated)
+hide circle
+skinparam linetype ortho
+
+entity contact_requests {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   full_name : String
+   email : String
+   company : String
+   message : String
+}
+entity newsletter_subscribers {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   email : String
+   subscribed_at : Instant
+}
+entity payments {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   subscription_id : Long <<FK>>
+   user_id : Long <<FK>>
+   amount : double
+   currency : String
+   status : PaymentStatus
+   card_last4 : String
+   paid_at : Instant
+}
+entity subscriptions {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   user_id : Long <<FK>>
+   company_name : String
+   plan_code : String
+   billing_cycle : BillingPeriod
+   status : SubscriptionStatus
+   current_period_start : Instant
+   current_period_end : Instant
+   cancelled_at : Instant
+}
+entity subscription_plans {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   code : String
+   name : String
+   description_key : String
+   price_amount : double
+   currency : String
+   billing_period : BillingPeriod
+   max_routes : int
+   max_devices : int
+   max_users : int
+   highlighted : boolean
+   custom : boolean
+   active : boolean
+}
+@enduml

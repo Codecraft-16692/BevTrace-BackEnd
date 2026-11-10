@@ -1,0 +1,60 @@
+@startuml dispatch-database-diagram
+title BevTrace - dispatch tables (generated)
+hide circle
+skinparam linetype ortho
+
+entity cargo_assignments {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   dispatch_order_id : Long <<FK>>
+   batch_id : Long <<FK>>
+   quantity : int
+   total_weight : double
+   pallet_count : int
+}
+entity delivery_destinations {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   client_name : String
+   address : String
+   latitude : double
+   longitude : double
+   region : String
+}
+entity dispatch_orders {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   manager_id : Long <<FK>>
+   vehicle_id : Long <<FK>>
+   destination_id : Long <<FK>>
+   scheduled_date : LocalDate
+   status : DispatchStatus
+   priority : DispatchPriority
+   estimated_weight : double
+   requested_quantity : int
+   delivered_quantity : Integer
+   delivered_at : Instant
+   departed_at : Instant
+   cargo_validated : boolean
+}
+entity drivers {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   full_name : String
+   license_number : String
+   status : DriverStatus
+}
+entity transport_vehicles {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   driver_id : Long <<FK>>
+   plate_number : String
+   max_capacity : double
+   is_available : boolean
+}
+@enduml

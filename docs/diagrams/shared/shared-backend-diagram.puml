@@ -1,0 +1,17 @@
+@startuml shared-backend-diagram
+title BevTrace - shared (same as Qualitrack, plus Results and FilterSpecifications)
+left to right direction
+class ApplicationError
+class Results
+class AbstractDomainAggregateRoot
+class OpenApiConfiguration
+class LocaleConfiguration
+class SnakeCaseWithPluralizedTablePhysicalNamingStrategy
+class AuditableAbstractPersistenceEntity
+class FilterSpecifications
+class GlobalExceptionHandler
+class ErrorResource
+class MessageResource
+class ErrorResponseAssembler
+class ResponseEntityAssembler
+@enduml
