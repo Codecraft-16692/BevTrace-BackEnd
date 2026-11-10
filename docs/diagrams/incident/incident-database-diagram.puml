@@ -1,0 +1,51 @@
+@startuml incident-database-diagram
+title BevTrace - incident tables (generated)
+hide circle
+skinparam linetype ortho
+
+entity alert_rules {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   condition_type : ConditionType
+   threshold : double
+   severity : Severity
+   description : String
+   active : boolean
+}
+entity corrective_actions {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   incident_id : Long <<FK>>
+   user_id : Long <<FK>>
+   description : String
+   applied_at : Instant
+}
+entity incident_records {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   log_id : Long <<FK>>
+   rule_id : Long <<FK>>
+   anomaly_type : ConditionType
+   severity : Severity
+   status : IncidentStatus
+   detected_at : Instant
+   description : String
+   acknowledged_by : Long
+   acknowledged_at : Instant
+   resolved_at : Instant
+   reopen_count : int
+}
+entity notifications {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   recipient_role : String
+   type : NotificationType
+   title : String
+   message : String
+   is_read : boolean
+}
+@enduml
