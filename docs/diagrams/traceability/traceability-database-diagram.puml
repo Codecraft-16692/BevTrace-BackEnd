@@ -1,0 +1,47 @@
+@startuml traceability-database-diagram
+title BevTrace - traceability tables (generated)
+hide circle
+skinparam linetype ortho
+
+entity delivery_records {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   log_id : Long <<FK>>
+   received_by : String
+   signature_url : String
+   delivered_at : Instant
+   status : DeliveryOutcome
+   rejection_reason : String
+}
+entity route_checkpoints {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   log_id : Long <<FK>>
+   step_order : int
+   location_name : String
+   latitude : double
+   longitude : double
+   status : CheckpointStatus
+   reached_at : Instant
+   observation : String
+}
+entity traceability_logs {
+  *id : bigint
+   created_at : timestamp
+   updated_at : timestamp
+   dispatch_order_id : Long <<FK>>
+   current_status : LogStatus
+   start_time : Instant
+   end_time : Instant
+   estimated_arrival : Instant
+   current_latitude : double
+   current_longitude : double
+   rejection_reason : String
+   order_priority : String
+   destination_name : String
+   vehicle_plate : String
+   device_id : Long <<FK>>
+}
+@enduml
