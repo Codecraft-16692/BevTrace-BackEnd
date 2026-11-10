@@ -1,0 +1,90 @@
+@startuml telemetry-backend-diagram
+title BevTrace - telemetry context (generated)
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+left to right direction
+
+package "Aggregate" #FDEBD0 {
+  class DeviceModel
+  class DisconnectionPeriod
+  class LocationStream
+  class TelemetryDevice
+}
+package "ValueObject" #FCF3CF {
+  enum ConnectionStatus
+  enum DataStatus
+}
+package "Event" #E8DAEF {
+  class ReadingRecorded
+}
+package "Port" #E8F6F3 {
+  interface DeviceModelRepository
+  interface DisconnectionPeriodRepository
+  interface LocationStreamRepository
+  interface TelemetryDeviceRepository
+}
+package "CommandService" #D5F5E3 {
+  class LocationStreamCommandService
+  class TelemetryDeviceCommandService
+}
+package "QueryService" #D5F5E3 {
+  class DeviceModelQueryService
+  class DisconnectionPeriodQueryService
+  class LocationStreamQueryService
+  class TelemetryDeviceQueryService
+}
+package "Internal" #D5F5E3 {
+  class ConnectivityMonitor
+}
+package "Adapter" #EAEDED {
+  class DeviceModelRepositoryAdapter
+  class DisconnectionPeriodRepositoryAdapter
+  class LocationStreamRepositoryAdapter
+  class TelemetryDeviceRepositoryAdapter
+}
+package "ACL" #FADBD8 {
+  class TelemetryContextFacade
+}
+package "Controller" #FADBD8 {
+  class DeviceModelsController
+  class DisconnectionPeriodsController
+  class LocationStreamsController
+  class TelemetryDevicesController
+}
+note as Ncommands
+  commands: DetectDisconnectionsCommand, ProvisionDeviceCommand, RecordReadingCommand
+end note
+note as Nqueries
+  queries: GetAllDeviceModelsQuery, GetAllDisconnectionPeriodsQuery, GetAllLocationStreamsQuery, GetAllTelemetryDevicesQuery, GetDeviceModelByIdQuery, GetDisconnectionPeriodByIdQuery, GetLocationStreamByIdQuery, GetTelemetryDeviceByIdQuery
+end note
+note as Nresources
+  resources: DeviceModelResource, DisconnectionPeriodResource, LocationStreamResource, ProvisionDeviceResource, RecordReadingResource, TelemetryDeviceResource
+end note
+LocationStreamCommandService --> TelemetryDeviceRepository
+LocationStreamCommandService --> LocationStreamRepository
+LocationStreamCommandService --> DisconnectionPeriodRepository
+TelemetryDeviceCommandService --> TelemetryDeviceRepository
+TelemetryDeviceCommandService --> DeviceModelRepository
+TelemetryDeviceCommandService --> DisconnectionPeriodRepository
+ConnectivityMonitor --> TelemetryDeviceCommandService
+DeviceModelQueryService --> DeviceModelRepository
+DisconnectionPeriodQueryService --> DisconnectionPeriodRepository
+LocationStreamQueryService --> LocationStreamRepository
+TelemetryDeviceQueryService --> TelemetryDeviceRepository
+DeviceModelRepositoryAdapter --> DeviceModelJpaRepository
+DeviceModelRepositoryAdapter ..|> DeviceModelRepository
+DisconnectionPeriodRepositoryAdapter --> DisconnectionPeriodJpaRepository
+DisconnectionPeriodRepositoryAdapter ..|> DisconnectionPeriodRepository
+LocationStreamRepositoryAdapter --> LocationStreamJpaRepository
+LocationStreamRepositoryAdapter ..|> LocationStreamRepository
+TelemetryDeviceRepositoryAdapter --> TelemetryDeviceJpaRepository
+TelemetryDeviceRepositoryAdapter ..|> TelemetryDeviceRepository
+TelemetryContextFacade --> TelemetryDeviceQueryService
+TelemetryContextFacade --> LocationStreamQueryService
+DeviceModelsController --> DeviceModelQueryService
+DisconnectionPeriodsController --> DisconnectionPeriodQueryService
+LocationStreamsController --> LocationStreamQueryService
+LocationStreamsController --> LocationStreamCommandService
+TelemetryDevicesController --> TelemetryDeviceQueryService
+TelemetryDevicesController --> TelemetryDeviceCommandService
+@enduml
