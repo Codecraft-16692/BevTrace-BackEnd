@@ -1,0 +1,27 @@
+digraph contexts {
+  rankdir=LR; node [shape=box, style=rounded];
+  iam;
+  inventory;
+  dispatch;
+  traceability;
+  telemetry;
+  incident;
+  analytics;
+  subscription;
+  analytics -> dispatch [label="ACL:DispatchContextFacade", fontsize=9];
+  analytics -> iam [label="ACL:IamContextFacade", fontsize=9];
+  analytics -> inventory [label="ACL:InventoryContextFacade", fontsize=9];
+  dispatch -> iam [label="ACL:IamContextFacade", fontsize=9];
+  dispatch -> inventory [label="ACL:InventoryContextFacade", fontsize=9];
+  dispatch -> traceability [label="event:DeliveryConfirmed", fontsize=9];
+  incident -> dispatch [label="event:DispatchAuthorized", fontsize=9];
+  incident -> iam [label="ACL:IamContextFacade", fontsize=9];
+  incident -> inventory [label="event:DiscrepanciesDetected", fontsize=9];
+  incident -> telemetry [label="ACL:TelemetryContextFacade", fontsize=9];
+  incident -> traceability [label="ACL:TraceabilityContextFacade, event:DeliveryConfirmed", fontsize=9];
+  inventory -> iam [label="ACL:IamContextFacade", fontsize=9];
+  subscription -> iam [label="ACL:IamContextFacade", fontsize=9];
+  telemetry -> dispatch [label="ACL:DispatchContextFacade", fontsize=9];
+  traceability -> dispatch [label="event:DispatchDeparted", fontsize=9];
+  traceability -> telemetry [label="ACL:TelemetryContextFacade, event:ReadingRecorded", fontsize=9];
+}
