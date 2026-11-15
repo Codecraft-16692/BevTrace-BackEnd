@@ -74,9 +74,10 @@ public class ProductBatchesController {
                         ApplicationError.notFound("ProductBatch", id)));
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_LOGISTICS_MANAGER')")
     @PostMapping
-    @Operation(summary = "Register a batch announced by the plant")
+    @Operation(summary = "Register a batch announced by the plant",
+            description = "First step of the batch intake; the warehouse operator then receives it by scanning (receptions).")
     public ResponseEntity<?> registerBatch(@Valid @RequestBody RegisterBatchResource resource) {
         var result = commandService.handle(ProductBatchCommandFromResourceAssembler.toCommandFromResource(resource));
         return ResponseEntityAssembler.toResponseEntityFromResult(result,
