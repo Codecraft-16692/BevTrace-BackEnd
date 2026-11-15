@@ -24,16 +24,19 @@ public class User extends AbstractDomainAggregateRoot<User> {
     }
 
     /**
-     * Registers a new, active user.
+     * Registers a new user. Self-registered users start disabled until a permission is granted to them;
+     * the account created by the system for the administrator starts enabled.
      *
      * @param roleId       role of the user
      * @param name         full name
      * @param email        unique e-mail (stored lower-case)
      * @param passwordHash BCrypt hash of the password
      * @param phone        contact phone
+     * @param active       initial state of the account
      * @return the new user
      */
-    public static User register(Long roleId, String name, String email, String passwordHash, String phone) {
+    public static User register(Long roleId, String name, String email, String passwordHash, String phone,
+                                boolean active) {
         if (email == null || !EMAIL.matcher(email.trim()).matches()) {
             throw new IllegalStateException("iam.errors.email-format");
         }
@@ -43,7 +46,7 @@ public class User extends AbstractDomainAggregateRoot<User> {
         user.email = email.trim().toLowerCase();
         user.passwordHash = passwordHash;
         user.phone = phone == null ? "" : phone.trim();
-        user.active = true;
+        user.active = active;
         user.createdAt = Instant.now();
         return user;
     }

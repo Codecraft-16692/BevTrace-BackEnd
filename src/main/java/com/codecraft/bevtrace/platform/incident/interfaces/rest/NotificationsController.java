@@ -79,7 +79,7 @@ public class NotificationsController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PatchMapping("/{id}/read")
+    @PatchMapping("/{id}/read-receipts")
     @Operation(summary = "Mark a notification as read")
     public ResponseEntity<?> markRead(@PathVariable Long id) {
         var result = commandService.handle(IncidentCommandFromResourceAssembler.toMarkReadCommand(id));

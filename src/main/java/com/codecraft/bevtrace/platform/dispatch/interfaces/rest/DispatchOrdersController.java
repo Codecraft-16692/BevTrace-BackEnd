@@ -96,7 +96,7 @@ public class DispatchOrdersController {
     }
 
     @PreAuthorize(MANAGER)
-    @PostMapping("/{id}/vehicle-assignment")
+    @PostMapping("/{id}/vehicle-assignments")
     @Operation(summary = "Assign a vehicle", description = "SCHEDULED -> AUTHORIZED; reserves the vehicle.")
     public ResponseEntity<?> assignVehicle(@PathVariable Long id, @Valid @RequestBody AssignVehicleResource resource) {
         var result = commandService.handle(DispatchOrderCommandFromResourceAssembler.toCommandFromResource(id, resource));
@@ -104,21 +104,21 @@ public class DispatchOrdersController {
     }
 
     @PreAuthorize(OPERATOR)
-    @PostMapping("/{id}/cargo-validation")
+    @PostMapping("/{id}/cargo-validations")
     @Operation(summary = "Validate the scanned pallets")
     public ResponseEntity<?> validateCargo(@PathVariable Long id, @Valid @RequestBody ValidateCargoResource resource) {
         return ok(commandService.handle(DispatchOrderCommandFromResourceAssembler.toCommandFromResource(id, resource)));
     }
 
     @PreAuthorize(MANAGER)
-    @PatchMapping("/{id}/priority")
+    @PatchMapping("/{id}/priorities")
     @Operation(summary = "Change the priority of a pending dispatch")
     public ResponseEntity<?> changePriority(@PathVariable Long id, @Valid @RequestBody ChangeDispatchPriorityResource resource) {
         return ok(commandService.handle(DispatchOrderCommandFromResourceAssembler.toCommandFromResource(id, resource)));
     }
 
     @PreAuthorize(MANAGER)
-    @PostMapping("/{id}/departure")
+    @PostMapping("/{id}/departures")
     @Operation(summary = "Register the departure",
             description = "AUTHORIZED -> IN_TRANSIT. Deducts the stock and starts the route traceability.")
     public ResponseEntity<?> depart(@PathVariable Long id) {
@@ -126,7 +126,7 @@ public class DispatchOrdersController {
     }
 
     @PreAuthorize(MANAGER)
-    @PostMapping("/{id}/cancellation")
+    @PostMapping("/{id}/cancellations")
     @Operation(summary = "Cancel a pending dispatch")
     public ResponseEntity<?> cancel(@PathVariable Long id) {
         return ok(commandService.handle(DispatchOrderCommandFromResourceAssembler.toCancelCommand(id)));

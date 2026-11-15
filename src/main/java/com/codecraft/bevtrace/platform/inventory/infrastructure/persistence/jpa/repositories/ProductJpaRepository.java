@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ProductJpaRepository extends JpaRepository<ProductPersistenceEntity, Long>, JpaSpecificationExecutor<ProductPersistenceEntity> {
+
+    boolean existsBySkuCode(String skuCode);
 }

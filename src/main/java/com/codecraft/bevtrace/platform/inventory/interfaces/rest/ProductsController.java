@@ -7,6 +7,14 @@ import com.codecraft.bevtrace.platform.inventory.interfaces.rest.resources.Produ
 import com.codecraft.bevtrace.platform.inventory.interfaces.rest.transform.ProductResourceFromEntityAssembler;
 import com.codecraft.bevtrace.platform.shared.application.result.ApplicationError;
 import com.codecraft.bevtrace.platform.shared.interfaces.rest.transform.ErrorResponseAssembler;
+import com.codecraft.bevtrace.platform.inventory.application.commandservices.ProductCommandService;
+import com.codecraft.bevtrace.platform.inventory.domain.model.commands.RegisterProductCommand;
+import com.codecraft.bevtrace.platform.inventory.interfaces.rest.resources.RegisterProductResource;
+import com.codecraft.bevtrace.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +40,22 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class ProductsController {
 
     private final ProductQueryService queryService;
+    private final ProductCommandService commandService;
 
-    public ProductsController(ProductQueryService queryService) {
+    public ProductsController(ProductQueryService queryService, ProductCommandService commandService) {
         this.queryService = queryService;
+        this.commandService = commandService;
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_LOGISTICS_MANAGER')")
+    @PostMapping
+    @Operation(summary = "Add a product to the catalogue",
+            description = "The logistics manager registers the products manually; stock only appears when batches are received.")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterProductResource resource) {
+        var command = new RegisterProductCommand(resource.skuCode(), resource.name(), resource.category(),
+                resource.volumeMl(), resource.packagingType());
+        return ResponseEntityAssembler.toResponseEntityFromResult(commandService.handle(command),
+                ProductResourceFromEntityAssembler::toResourceFromEntity, HttpStatus.CREATED);
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -75,7 +75,7 @@ public class InventoryDiscrepanciesController {
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_LOGISTICS_MANAGER')")
-    @PostMapping("/{id}/resolution")
+    @PostMapping("/{id}/resolutions")
     @Operation(summary = "Resolve a discrepancy", description = "Adjusts the batch stock to the counted units.")
     public ResponseEntity<?> resolve(@PathVariable Long id, @Valid @RequestBody ResolveDiscrepancyResource resource) {
         var result = commandService.handle(

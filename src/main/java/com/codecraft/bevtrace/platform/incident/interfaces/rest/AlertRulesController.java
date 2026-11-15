@@ -84,7 +84,7 @@ public class AlertRulesController {
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_LOGISTICS_MANAGER')")
-    @PatchMapping("/{id}/active")
+    @PatchMapping("/{id}/states")
     @Operation(summary = "Enable or disable a rule")
     public ResponseEntity<?> changeStatus(@PathVariable Long id, @Valid @RequestBody UpdateAlertRuleStatusResource resource) {
         var result = commandService.handle(IncidentCommandFromResourceAssembler.toCommandFromResource(id, resource));

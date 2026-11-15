@@ -100,7 +100,7 @@ public class SubscriptionsController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{id}/cancellation")
+    @PostMapping("/{id}/cancellations")
     @Operation(summary = "Cancel a subscription")
     public ResponseEntity<?> cancel(@PathVariable Long id, Authentication authentication) {
         var command = SubscriptionCommandFromResourceAssembler.toCancelCommand(

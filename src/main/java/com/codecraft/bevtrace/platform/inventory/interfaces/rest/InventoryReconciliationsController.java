@@ -88,7 +88,7 @@ public class InventoryReconciliationsController {
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_LOGISTICS_MANAGER')")
-    @PostMapping("/{id}/confirmation")
+    @PostMapping("/{id}/confirmations")
     @Operation(summary = "Confirm a reconciliation", description = "Fails while discrepancies are open.")
     public ResponseEntity<?> confirm(Authentication authentication, @PathVariable Long id) {
         var userId = iam.fetchUserIdByEmail(authentication.getName()).orElseThrow();

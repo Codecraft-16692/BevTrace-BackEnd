@@ -4,7 +4,7 @@ import com.codecraft.bevtrace.platform.iam.application.internal.outboundservices
 import com.codecraft.bevtrace.platform.iam.application.internal.outboundservices.tokens.TokenService;
 import com.codecraft.bevtrace.platform.iam.domain.model.aggregates.User;
 import com.codecraft.bevtrace.platform.iam.domain.model.commands.AssignRoleCommand;
-import com.codecraft.bevtrace.platform.iam.domain.model.commands.ChangeUserStatusCommand;
+import com.codecraft.bevtrace.platform.iam.domain.model.commands.RevokeAccessCommand;
 import com.codecraft.bevtrace.platform.iam.domain.model.commands.SignInCommand;
 import com.codecraft.bevtrace.platform.iam.domain.model.commands.SignUpCommand;
 import com.codecraft.bevtrace.platform.iam.domain.model.entities.Role;
@@ -79,36 +79,60 @@ public class UserCommandService {
             if (role.get().isAdmin()) {
                 throw new IllegalStateException("iam.errors.role-not-allowed");
             }
+            // Self-registered accounts wait for a permission: the manager approves operators, the admin approves managers.
             return users.save(User.register(command.roleId(), command.name(), email,
-                    hashing.encode(command.password()), command.phone()));
+                    hashing.encode(command.password()), command.phone(), false));
         });
     }
 
+    /**
+     * Grants a role to a user and enables the account.
+     */
     public Result<User, ApplicationError> handle(AssignRoleCommand command) {
         var user = users.findById(command.userId());
         if (user.isEmpty()) {
             return Result.failure(ApplicationError.notFound("User", command.userId()));
         }
-        if (!roles.existsById(command.roleId())) {
+        var role = roles.findById(command.roleId());
+        if (role.isEmpty()) {
             return Result.failure(ApplicationError.notFound("Role", command.roleId()));
         }
         return Results.attempt(() -> {
             requireOther(command.actorUserId(), command.userId());
+            if (!command.actorAdmin()) {
+                requireOperator(user.get().getRoleId());
+                requireOperator(role.get().getId());
+            }
             user.get().assignRole(command.roleId());
+            user.get().changeActive(true);
             return users.save(user.get());
         });
     }
 
-    public Result<User, ApplicationError> handle(ChangeUserStatusCommand command) {
+    /**
+     * Disables an account so that it can no longer sign in.
+     */
+    public Result<User, ApplicationError> handle(RevokeAccessCommand command) {
         var user = users.findById(command.userId());
         if (user.isEmpty()) {
             return Result.failure(ApplicationError.notFound("User", command.userId()));
         }
         return Results.attempt(() -> {
             requireOther(command.actorUserId(), command.userId());
-            user.get().changeActive(command.active());
+            if (!command.actorAdmin()) {
+                requireOperator(user.get().getRoleId());
+            }
+            user.get().changeActive(false);
             return users.save(user.get());
         });
+    }
+
+    /** The logistics manager only manages warehouse operators. */
+    private void requireOperator(Long roleId) {
+        var operator = roles.findByName(Role.WAREHOUSE_OPERATOR);
+        if (operator.isEmpty() || !operator.get().getId().equals(roleId)) {
+            throw new IllegalStateException("iam.errors.role-not-allowed");
+        }
     }
 
     private static void requireOther(Long actorUserId, Long userId) {

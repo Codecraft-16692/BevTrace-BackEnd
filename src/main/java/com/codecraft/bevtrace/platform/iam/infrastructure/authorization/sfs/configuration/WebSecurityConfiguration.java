@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 /**
- * Stateless JWT security of the API. Sign-in/up, the plan catalog, the public forms and the API docs are
+ * Stateless JWT security of the API. Sign-in/up, the plan catalog and the API docs are
  * open; everything else needs a valid token, and each endpoint refines access with {@code @PreAuthorize}.
  */
 @Configuration
@@ -76,7 +76,6 @@ public class WebSecurityConfiguration {
                                 "/actuator/health", "/api/v1/authentication/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/roles", "/api/v1/subscription-plans").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/contact-requests", "/api/v1/newsletter-subscribers").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(bearerFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

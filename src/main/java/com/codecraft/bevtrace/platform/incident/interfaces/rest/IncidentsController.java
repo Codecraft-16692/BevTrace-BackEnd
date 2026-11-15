@@ -43,15 +43,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 @RestController
 @RequestMapping(value = "/api/v1/incidents", produces = APPLICATION_JSON_VALUE)
-@Tag(name = "IncidentRecords", description = "Incident Records of the incident context")
-public class IncidentRecordsController {
+@Tag(name = "Incidents", description = "Incidents of the incident context")
+public class IncidentsController {
 
     private final IncidentRecordQueryService queryService;
     private final IncidentRecordCommandService commandService;
     private final CorrectiveActionCommandService actionCommandService;
     private final IamContextFacade iam;
 
-    public IncidentRecordsController(IncidentRecordQueryService queryService, IncidentRecordCommandService commandService,
+    public IncidentsController(IncidentRecordQueryService queryService, IncidentRecordCommandService commandService,
                                      CorrectiveActionCommandService actionCommandService, IamContextFacade iam) {
         this.queryService = queryService;
         this.commandService = commandService;
@@ -94,7 +94,7 @@ public class IncidentRecordsController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{id}/acknowledgement")
+    @PostMapping("/{id}/acknowledgments")
     @Operation(summary = "Acknowledge an open incident")
     public ResponseEntity<?> acknowledge(@PathVariable Long id, Authentication authentication) {
         var userId = iam.fetchUserIdByEmail(authentication.getName()).orElseThrow();
@@ -116,7 +116,7 @@ public class IncidentRecordsController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{id}/resolution")
+    @PostMapping("/{id}/resolutions")
     @Operation(summary = "Resolve an incident", description = "Needs at least one corrective action.")
     public ResponseEntity<?> resolve(@PathVariable Long id) {
         var result = commandService.handle(IncidentCommandFromResourceAssembler.toResolveCommand(id));
