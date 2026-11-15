@@ -6,11 +6,26 @@ package com.codecraft.bevtrace.platform.iam.domain.model.entities;
  */
 public class Role {
 
+    public static final String ADMIN = "ROLE_ADMIN";
+    public static final String LOGISTICS_MANAGER = "ROLE_LOGISTICS_MANAGER";
+    public static final String WAREHOUSE_OPERATOR = "ROLE_WAREHOUSE_OPERATOR";
+
     private Long id;
     private String name;
     private boolean isAdmin;
 
     protected Role() {
+    }
+
+    /**
+     * Creates a role that is not stored yet.
+     *
+     * @param name    authority name
+     * @param isAdmin whether it has administrator rights
+     * @return the role, without id
+     */
+    public static Role create(String name, boolean isAdmin) {
+        return restore(null, name, isAdmin);
     }
 
     /**
