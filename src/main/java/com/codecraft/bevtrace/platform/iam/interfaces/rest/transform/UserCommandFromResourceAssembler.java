@@ -1,13 +1,12 @@
 package com.codecraft.bevtrace.platform.iam.interfaces.rest.transform;
 
 import com.codecraft.bevtrace.platform.iam.domain.model.commands.AssignRoleCommand;
-import com.codecraft.bevtrace.platform.iam.domain.model.commands.ChangeUserStatusCommand;
+import com.codecraft.bevtrace.platform.iam.domain.model.commands.RevokeAccessCommand;
 import com.codecraft.bevtrace.platform.iam.domain.model.commands.SignInCommand;
 import com.codecraft.bevtrace.platform.iam.domain.model.commands.SignUpCommand;
 import com.codecraft.bevtrace.platform.iam.interfaces.rest.resources.SignInResource;
 import com.codecraft.bevtrace.platform.iam.interfaces.rest.resources.SignUpResource;
-import com.codecraft.bevtrace.platform.iam.interfaces.rest.resources.UpdateUserRoleResource;
-import com.codecraft.bevtrace.platform.iam.interfaces.rest.resources.UpdateUserStatusResource;
+import com.codecraft.bevtrace.platform.iam.interfaces.rest.resources.GrantPermissionResource;
 
 /**
  * Builds the commands of the IAM context from the request bodies.
@@ -25,11 +24,12 @@ public final class UserCommandFromResourceAssembler {
         return new SignUpCommand(resource.roleId(), resource.name(), resource.email(), resource.phone(), resource.password());
     }
 
-    public static AssignRoleCommand toCommandFromResource(Long actorUserId, Long userId, UpdateUserRoleResource resource) {
-        return new AssignRoleCommand(actorUserId, userId, resource.roleId());
+    public static AssignRoleCommand toCommandFromResource(Long actorUserId, boolean actorAdmin, Long userId,
+                                                          GrantPermissionResource resource) {
+        return new AssignRoleCommand(actorUserId, actorAdmin, userId, resource.roleId());
     }
 
-    public static ChangeUserStatusCommand toCommandFromResource(Long actorUserId, Long userId, UpdateUserStatusResource resource) {
-        return new ChangeUserStatusCommand(actorUserId, userId, resource.active());
+    public static RevokeAccessCommand toRevokeCommand(Long actorUserId, boolean actorAdmin, Long userId) {
+        return new RevokeAccessCommand(actorUserId, actorAdmin, userId);
     }
 }

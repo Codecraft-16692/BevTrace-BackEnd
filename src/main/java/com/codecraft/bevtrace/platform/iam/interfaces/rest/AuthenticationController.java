@@ -33,7 +33,7 @@ public class AuthenticationController {
         this.userCommandService = userCommandService;
     }
 
-    @PostMapping("/sign-in")
+    @PostMapping("/tokens")
     @Operation(summary = "Sign in", description = "Authenticates a user and returns a JWT to send as Bearer token.")
     public ResponseEntity<?> signIn(@Valid @RequestBody SignInResource resource) {
         var result = userCommandService.handle(UserCommandFromResourceAssembler.toCommandFromResource(resource));
@@ -41,7 +41,7 @@ public class AuthenticationController {
                 AuthenticatedUserResourceFromEntityAssembler::toResourceFromEntity, HttpStatus.OK);
     }
 
-    @PostMapping("/sign-up")
+    @PostMapping("/registrations")
     @Operation(summary = "Register a user", description = "Administrators cannot self-register.")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpResource resource) {
         var result = userCommandService.handle(UserCommandFromResourceAssembler.toCommandFromResource(resource));

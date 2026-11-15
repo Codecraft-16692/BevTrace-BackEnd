@@ -14,6 +14,8 @@ public interface ProductRepository {
 
     boolean existsById(Long id);
 
+    boolean existsBySkuCode(String skuCode);
+
     Product save(Product product);
 
     /**

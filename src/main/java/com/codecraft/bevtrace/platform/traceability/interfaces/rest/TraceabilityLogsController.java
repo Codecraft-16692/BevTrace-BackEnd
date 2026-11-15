@@ -74,7 +74,7 @@ public class TraceabilityLogsController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{id}/delivery")
+    @PostMapping("/{id}/deliveries")
     @Operation(summary = "Confirm the delivery", description = "Completes the log and closes the dispatch order.")
     public ResponseEntity<?> confirmDelivery(@PathVariable Long id, @Valid @RequestBody ConfirmDeliveryResource resource) {
         var result = commandService.handle(TraceabilityLogCommandFromResourceAssembler.toCommandFromResource(id, resource));
@@ -83,7 +83,7 @@ public class TraceabilityLogsController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{id}/rejection")
+    @PostMapping("/{id}/rejections")
     @Operation(summary = "Register a rejected delivery", description = "The shipment stays open.")
     public ResponseEntity<?> rejectDelivery(@PathVariable Long id, @Valid @RequestBody RejectDeliveryResource resource) {
         var result = commandService.handle(TraceabilityLogCommandFromResourceAssembler.toCommandFromResource(id, resource));

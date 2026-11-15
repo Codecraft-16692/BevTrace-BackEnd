@@ -46,7 +46,7 @@ package "Adapter" #EAEDED {
 package "Controller" #FADBD8 {
   class AlertRulesController
   class CorrectiveActionsController
-  class IncidentRecordsController
+  class IncidentsController
   class NotificationsController
 }
 note as Ncommands
@@ -81,9 +81,9 @@ NotificationRepositoryAdapter ..|> NotificationRepository
 AlertRulesController --> AlertRuleQueryService
 AlertRulesController --> AlertRuleCommandService
 CorrectiveActionsController --> CorrectiveActionQueryService
-IncidentRecordsController --> IncidentRecordQueryService
-IncidentRecordsController --> IncidentRecordCommandService
-IncidentRecordsController --> CorrectiveActionCommandService
+IncidentsController --> IncidentRecordQueryService
+IncidentsController --> IncidentRecordCommandService
+IncidentsController --> CorrectiveActionCommandService
 NotificationsController --> NotificationQueryService
 NotificationsController --> NotificationCommandService
 @enduml

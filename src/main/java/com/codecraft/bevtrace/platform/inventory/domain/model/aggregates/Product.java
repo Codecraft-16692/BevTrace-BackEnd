@@ -17,6 +17,29 @@ public class Product extends AbstractDomainAggregateRoot<Product> {
     protected Product() {
     }
 
+    /**
+     * Registers a new product of the catalogue.
+     *
+     * @param skuCode       unique stock-keeping code
+     * @param name          product name
+     * @param category      category (water, soda, beer...)
+     * @param volumeMl      volume of one unit in millilitres, positive
+     * @param packagingType packaging (bottle, can...)
+     * @return the new product
+     */
+    public static Product register(String skuCode, String name, String category, int volumeMl, String packagingType) {
+        if (volumeMl <= 0) {
+            throw new IllegalStateException("inventory.errors.volume-invalid");
+        }
+        var p = new Product();
+        p.skuCode = skuCode.trim().toUpperCase();
+        p.name = name.trim();
+        p.category = category.trim();
+        p.volumeMl = volumeMl;
+        p.packagingType = packagingType.trim();
+        return p;
+    }
+
     public Long getId() {
         return id;
     }
