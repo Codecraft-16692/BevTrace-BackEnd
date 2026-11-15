@@ -6,14 +6,14 @@ Generated from the controllers by `tools/generate_docs.py`. Base path `/api/v1`.
 
 | Method | Path | Access | Summary |
 |---|---|---|---|
-| POST | `/api/v1/authentication/sign-in` | public | Sign in |
-| POST | `/api/v1/authentication/sign-up` | public | Register a user |
+| POST | `/api/v1/authentication/tokens` | public | Sign in |
+| POST | `/api/v1/authentication/registrations` | public | Register a user |
 | GET | `/api/v1/roles` | public | List roles |
 | GET | `/api/v1/roles/{id}` | public | Get a role by id |
-| GET | `/api/v1/users` | ROLE_ADMIN | List users |
-| GET | `/api/v1/users/{id}` | ROLE_ADMIN | Get a user by id |
-| PATCH | `/api/v1/users/{id}/role` | ROLE_ADMIN | Assign a role to a user |
-| PATCH | `/api/v1/users/{id}/active` | ROLE_ADMIN | Enable or disable a user |
+| GET | `/api/v1/users` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | List users |
+| GET | `/api/v1/users/{id}` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Get a user by id |
+| POST | `/api/v1/users/{id}/permissions` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Grant a permission (role) to a user and enable the account |
+| POST | `/api/v1/users/{id}/revocations` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Revoke the access of a user |
 
 ## inventory
 
@@ -21,17 +21,18 @@ Generated from the controllers by `tools/generate_docs.py`. Base path `/api/v1`.
 |---|---|---|---|
 | GET | `/api/v1/discrepancies` | isAuthenticated() | List inventory discrepancies |
 | GET | `/api/v1/discrepancies/{id}` | isAuthenticated() | Get a inventory discrepancy by id |
-| POST | `/api/v1/discrepancies/{id}/resolution` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Resolve a discrepancy |
+| POST | `/api/v1/discrepancies/{id}/resolutions` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Resolve a discrepancy |
 | GET | `/api/v1/reconciliations` | isAuthenticated() | List inventory reconciliations |
 | GET | `/api/v1/reconciliations/{id}` | isAuthenticated() | Get a inventory reconciliation by id |
 | POST | `/api/v1/reconciliations` | isAuthenticated() | Run a physical reconciliation |
-| POST | `/api/v1/reconciliations/{id}/confirmation` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Confirm a reconciliation |
+| POST | `/api/v1/reconciliations/{id}/confirmations` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Confirm a reconciliation |
 | GET | `/api/v1/batches` | isAuthenticated() | List product batches |
 | GET | `/api/v1/batches/{id}` | isAuthenticated() | Get a product batch by id |
-| POST | `/api/v1/batches` | isAuthenticated() | Register a batch announced by the plant |
+| POST | `/api/v1/batches` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Register a batch announced by the plant |
 | POST | `/api/v1/batches/receptions` | isAuthenticated() | Receive a batch by scanning its code |
 | GET | `/api/v1/products` | isAuthenticated() | List products |
 | GET | `/api/v1/products/{id}` | isAuthenticated() | Get a product by id |
+| POST | `/api/v1/products` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Add a product to the catalogue |
 | GET | `/api/v1/zones` | isAuthenticated() | List warehouse zones |
 | GET | `/api/v1/zones/{id}` | isAuthenticated() | Get a warehouse zone by id |
 | GET | `/api/v1/waste-records` | isAuthenticated() | List waste records |
@@ -48,12 +49,12 @@ Generated from the controllers by `tools/generate_docs.py`. Base path `/api/v1`.
 | GET | `/api/v1/destinations/{id}` | isAuthenticated() | Get a delivery destination by id |
 | GET | `/api/v1/dispatch-orders` | isAuthenticated() | List dispatch orders |
 | GET | `/api/v1/dispatch-orders/{id}` | isAuthenticated() | Get a dispatch order by id |
-| POST | `/api/v1/dispatch-orders` | signed-in | Schedule a dispatch |
-| POST | `/api/v1/dispatch-orders/{id}/vehicle-assignment` | signed-in | Assign a vehicle |
-| POST | `/api/v1/dispatch-orders/{id}/cargo-validation` | signed-in | Validate the scanned pallets |
-| PATCH | `/api/v1/dispatch-orders/{id}/priority` | signed-in | Change the priority of a pending dispatch |
-| POST | `/api/v1/dispatch-orders/{id}/departure` | signed-in | Register the departure |
-| POST | `/api/v1/dispatch-orders/{id}/cancellation` | signed-in | Cancel a pending dispatch |
+| POST | `/api/v1/dispatch-orders` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Schedule a dispatch |
+| POST | `/api/v1/dispatch-orders/{id}/vehicle-assignments` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Assign a vehicle |
+| POST | `/api/v1/dispatch-orders/{id}/cargo-validations` | ROLE_ADMIN, ROLE_WAREHOUSE_OPERATOR | Validate the scanned pallets |
+| PATCH | `/api/v1/dispatch-orders/{id}/priorities` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Change the priority of a pending dispatch |
+| POST | `/api/v1/dispatch-orders/{id}/departures` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Register the departure |
+| POST | `/api/v1/dispatch-orders/{id}/cancellations` | ROLE_ADMIN, ROLE_LOGISTICS_MANAGER | Cancel a pending dispatch |
 | GET | `/api/v1/drivers` | isAuthenticated() | List drivers |
 | GET | `/api/v1/drivers/{id}` | isAuthenticated() | Get a driver by id |
 | GET | `/api/v1/vehicles` | isAuthenticated() | List transport vehicles |
@@ -69,8 +70,8 @@ Generated from the controllers by `tools/generate_docs.py`. Base path `/api/v1`.
 | GET | `/api/v1/route-checkpoints/{id}` | isAuthenticated() | Get a route checkpoint by id |
 | GET | `/api/v1/logs` | isAuthenticated() | List traceability logs |
 | GET | `/api/v1/logs/{id}` | isAuthenticated() | Get a traceability log by id |
-| POST | `/api/v1/logs/{id}/delivery` | isAuthenticated() | Confirm the delivery |
-| POST | `/api/v1/logs/{id}/rejection` | isAuthenticated() | Register a rejected delivery |
+| POST | `/api/v1/logs/{id}/deliveries` | isAuthenticated() | Confirm the delivery |
+| POST | `/api/v1/logs/{id}/rejections` | isAuthenticated() | Register a rejected delivery |
 
 ## telemetry
 
@@ -94,18 +95,18 @@ Generated from the controllers by `tools/generate_docs.py`. Base path `/api/v1`.
 | GET | `/api/v1/rules` | isAuthenticated() | List alert rules |
 | GET | `/api/v1/rules/{id}` | isAuthenticated() | Get a alert rule by id |
 | POST | `/api/v1/rules` | ROLE_ADMIN,ROLE_LOGISTICS_MANAGER | Create an alert rule |
-| PATCH | `/api/v1/rules/{id}/active` | ROLE_ADMIN,ROLE_LOGISTICS_MANAGER | Enable or disable a rule |
+| PATCH | `/api/v1/rules/{id}/states` | ROLE_ADMIN,ROLE_LOGISTICS_MANAGER | Enable or disable a rule |
 | GET | `/api/v1/corrective-actions` | isAuthenticated() | List corrective actions |
 | GET | `/api/v1/corrective-actions/{id}` | isAuthenticated() | Get a corrective action by id |
-| GET | `/api/v1/incidents` | isAuthenticated() | List incident records |
-| GET | `/api/v1/incidents/{id}` | isAuthenticated() | Get a incident record by id |
+| GET | `/api/v1/incidents` | isAuthenticated() | List incidents |
+| GET | `/api/v1/incidents/{id}` | isAuthenticated() | Get an incident by id |
 | POST | `/api/v1/incidents/detections` | ROLE_ADMIN,ROLE_LOGISTICS_MANAGER | Run the anomaly detection now |
-| POST | `/api/v1/incidents/{id}/acknowledgement` | isAuthenticated() | Acknowledge an open incident |
+| POST | `/api/v1/incidents/{id}/acknowledgments` | isAuthenticated() | Acknowledge an open incident |
 | POST | `/api/v1/incidents/{id}/corrective-actions` | isAuthenticated() | Register a corrective action |
-| POST | `/api/v1/incidents/{id}/resolution` | isAuthenticated() | Resolve an incident |
+| POST | `/api/v1/incidents/{id}/resolutions` | isAuthenticated() | Resolve an incident |
 | GET | `/api/v1/notifications` | isAuthenticated() | List notifications |
 | GET | `/api/v1/notifications/{id}` | isAuthenticated() | Get a notification by id |
-| PATCH | `/api/v1/notifications/{id}/read` | isAuthenticated() | Mark a notification as read |
+| PATCH | `/api/v1/notifications/{id}/read-receipts` | isAuthenticated() | Mark a notification as read |
 
 ## analytics
 
@@ -120,12 +121,6 @@ Generated from the controllers by `tools/generate_docs.py`. Base path `/api/v1`.
 
 | Method | Path | Access | Summary |
 |---|---|---|---|
-| GET | `/api/v1/contact-requests` | ROLE_ADMIN | List contact requests |
-| GET | `/api/v1/contact-requests/{id}` | ROLE_ADMIN | Get a contact request by id |
-| POST | `/api/v1/contact-requests` | public | Public form: contact request |
-| GET | `/api/v1/newsletter-subscribers` | ROLE_ADMIN | List newsletter subscribers |
-| GET | `/api/v1/newsletter-subscribers/{id}` | ROLE_ADMIN | Get a newsletter subscriber by id |
-| POST | `/api/v1/newsletter-subscribers` | public | Public form: newsletter |
 | GET | `/api/v1/payments` | isAuthenticated() | List payments |
 | GET | `/api/v1/payments/{id}` | isAuthenticated() | Get a payment by id |
 | GET | `/api/v1/subscription-plans` | public | List subscription plans |
@@ -133,5 +128,5 @@ Generated from the controllers by `tools/generate_docs.py`. Base path `/api/v1`.
 | GET | `/api/v1/subscriptions` | isAuthenticated() | List subscriptions |
 | GET | `/api/v1/subscriptions/{id}` | isAuthenticated() | Get a subscription by id |
 | POST | `/api/v1/subscriptions` | isAuthenticated() | Buy a plan |
-| POST | `/api/v1/subscriptions/{id}/cancellation` | isAuthenticated() | Cancel a subscription |
+| POST | `/api/v1/subscriptions/{id}/cancellations` | isAuthenticated() | Cancel a subscription |
 
