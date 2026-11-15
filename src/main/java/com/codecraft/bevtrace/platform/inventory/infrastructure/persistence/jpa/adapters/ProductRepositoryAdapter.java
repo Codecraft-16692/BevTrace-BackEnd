@@ -36,6 +36,11 @@ public class ProductRepositoryAdapter implements ProductRepository {
     }
 
     @Override
+    public boolean existsBySkuCode(String skuCode) {
+        return jpa.existsBySkuCode(skuCode);
+    }
+
+    @Override
     public Product save(Product aggregate) {
         var saved = jpa.save(ProductPersistenceEntity.fromDomain(aggregate)).toDomain();
         aggregate.domainEvents().forEach(events::publishEvent);
