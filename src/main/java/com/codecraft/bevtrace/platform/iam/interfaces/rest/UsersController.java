@@ -3,14 +3,14 @@ package com.codecraft.bevtrace.platform.iam.interfaces.rest;
 import com.codecraft.bevtrace.platform.iam.application.commandservices.UserCommandService;
 import com.codecraft.bevtrace.platform.iam.application.queryservices.UserQueryService;
 import com.codecraft.bevtrace.platform.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
-import com.codecraft.bevtrace.platform.iam.interfaces.rest.resources.UpdateUserRoleResource;
-import com.codecraft.bevtrace.platform.iam.interfaces.rest.resources.UpdateUserStatusResource;
+import com.codecraft.bevtrace.platform.iam.interfaces.rest.resources.GrantPermissionResource;
 import com.codecraft.bevtrace.platform.iam.interfaces.rest.transform.UserCommandFromResourceAssembler;
 import com.codecraft.bevtrace.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.codecraft.bevtrace.platform.iam.domain.model.queries.GetUserByIdQuery;
 import com.codecraft.bevtrace.platform.iam.domain.model.queries.GetAllUsersQuery;
@@ -50,47 +50,61 @@ public class UsersController {
         this.commandService = commandService;
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    private static final String MANAGEMENT = "hasAnyAuthority('ROLE_ADMIN','ROLE_LOGISTICS_MANAGER')";
+
+    private static boolean isAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    @PreAuthorize(MANAGEMENT)
     @GetMapping
     @Operation(summary = "List users",
-            description = "Filter with ?field=value (repeat for IN), sort with _sort and _order, cap with _limit.")
-    public ResponseEntity<List<UserResource>> getAll(@RequestParam MultiValueMap<String, String> params) {
+            description = "Filter with ?field=value (repeat for IN), sort with _sort and _order, cap with _limit. "
+                    + "A logistics manager only sees the warehouse operators.")
+    public ResponseEntity<List<UserResource>> getAll(@RequestParam MultiValueMap<String, String> params,
+                                                     Authentication authentication) {
         var filters = new HashMap<String, List<String>>();
         params.forEach(filters::put);
         var query = new GetAllUsersQuery(filters, params.getFirst("_sort"), params.getFirst("_order"),
                 params.getFirst("_limit") == null ? null : Integer.valueOf(params.getFirst("_limit")));
-        var resources = queryService.handle(query).stream()
-                .map(UserResourceFromEntityAssembler::toResourceFromEntity).toList();
-        return ResponseEntity.ok(resources);
+        var users = isAdmin(authentication) ? queryService.handle(query) : queryService.handleForManager(query);
+        return ResponseEntity.ok(users.stream().map(UserResourceFromEntityAssembler::toResourceFromEntity).toList());
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize(MANAGEMENT)
     @GetMapping("/{id}")
     @Operation(summary = "Get a user by id")
-    public ResponseEntity<?> getById(@PathVariable Long id) {
-        return queryService.handle(new GetUserByIdQuery(id))
+    public ResponseEntity<?> getById(@PathVariable Long id, Authentication authentication) {
+        var query = new GetUserByIdQuery(id);
+        var user = isAdmin(authentication) ? queryService.handle(query) : queryService.handleForManager(query);
+        return user
                 .<ResponseEntity<?>>map(e -> ResponseEntity.ok(UserResourceFromEntityAssembler.toResourceFromEntity(e)))
                 .orElseGet(() -> ErrorResponseAssembler.toErrorResponseFromApplicationError(
                         ApplicationError.notFound("User", id)));
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @PatchMapping("/{id}/role")
-    @Operation(summary = "Assign a role to a user")
-    public ResponseEntity<?> assignRole(@AuthenticationPrincipal UserDetailsImpl actor, @PathVariable Long id,
-                                        @Valid @RequestBody UpdateUserRoleResource resource) {
-        var result = commandService.handle(UserCommandFromResourceAssembler.toCommandFromResource(actor.getId(), id, resource));
+    @PreAuthorize(MANAGEMENT)
+    @PostMapping("/{id}/permissions")
+    @Operation(summary = "Grant a permission to a user",
+            description = "Grants the role and enables the account. The logistics manager can only grant the "
+                    + "warehouse operator role; the administrator can grant any role.")
+    public ResponseEntity<?> grantPermission(@AuthenticationPrincipal UserDetailsImpl actor, Authentication authentication,
+                                             @PathVariable Long id, @Valid @RequestBody GrantPermissionResource resource) {
+        var result = commandService.handle(UserCommandFromResourceAssembler.toCommandFromResource(
+                actor.getId(), isAdmin(authentication), id, resource));
         return ResponseEntityAssembler.toResponseEntityFromResult(result,
-                UserResourceFromEntityAssembler::toResourceFromEntity, HttpStatus.OK);
+                UserResourceFromEntityAssembler::toResourceFromEntity, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @PatchMapping("/{id}/active")
-    @Operation(summary = "Enable or disable a user")
-    public ResponseEntity<?> changeStatus(@AuthenticationPrincipal UserDetailsImpl actor, @PathVariable Long id,
-                                          @Valid @RequestBody UpdateUserStatusResource resource) {
-        var result = commandService.handle(UserCommandFromResourceAssembler.toCommandFromResource(actor.getId(), id, resource));
+    @PreAuthorize(MANAGEMENT)
+    @PostMapping("/{id}/revocations")
+    @Operation(summary = "Revoke the access of a user",
+            description = "Disables the account. A permission has to be granted again to re-enable it.")
+    public ResponseEntity<?> revokeAccess(@AuthenticationPrincipal UserDetailsImpl actor, Authentication authentication,
+                                          @PathVariable Long id) {
+        var result = commandService.handle(UserCommandFromResourceAssembler.toRevokeCommand(
+                actor.getId(), isAdmin(authentication), id));
         return ResponseEntityAssembler.toResponseEntityFromResult(result,
-                UserResourceFromEntityAssembler::toResourceFromEntity, HttpStatus.OK);
+                UserResourceFromEntityAssembler::toResourceFromEntity, HttpStatus.CREATED);
     }
 }
