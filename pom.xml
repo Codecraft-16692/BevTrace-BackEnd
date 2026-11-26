@@ -5,19 +5,17 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.5</version>
-        <relativePath/>
+        <version>4.1.2</version>
     </parent>
     <groupId>com.codecraft</groupId>
     <artifactId>bevtrace-platform</artifactId>
     <version>1.1.0</version>
     <name>BevTrace Platform</name>
     <description>REST backend of BevTrace: IoT traceability for beverage logistics</description>
-
     <properties>
-        <java.version>21</java.version>
+        <java.version>27</java.version>
+        <lombok.version>1.18.48</lombok.version>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -40,8 +38,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- Required by the shared package (same as Qualitrack): Lombok for the auditing base entity,
-             pluralize for the physical naming strategy -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -53,7 +49,6 @@
             <version>1.0.0</version>
         </dependency>
 
-        <!-- API documentation (Swagger UI) -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -79,7 +74,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Databases: MySQL for dev/prod, H2 (in memory) only for the context-loads test -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>

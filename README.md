@@ -1,14 +1,14 @@
 # BevTrace Platform (backend)
 
 REST API of **BevTrace**, an IoT traceability platform for beverage logistics: inventory, dispatch, route traceability, device telemetry,
-incidents, analytics and subscriptions. Java 21 · Spring Boot 4 · Spring Data JPA · Spring Security (JWT) · MySQL · OpenAPI.
+incidents, analytics and subscriptions. Java 27 · Spring Boot 4.1 · Spring Data JPA · Spring Security (JWT) · MySQL · OpenAPI.
 
 It serves the Angular frontend (`BevTrace-FrontEnd`) with the same resource names and fields as its `db.json` mock and moves the business rules out
 of the browser into domain commands.
 
 ## Run it
 
-Requirements: JDK 21, Maven 3.9 and a MySQL server (or Docker).
+Requirements: JDK 27, Maven 3.9 and a MySQL server (or Docker).
 
 ```bash
 mvn spring-boot:run                      # local MySQL (docker compose up -d db), dev profile
